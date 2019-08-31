@@ -1,8 +1,13 @@
 <mat-card>
-  <mat-form-field class="example-full-width">
-    <textarea matInput placeholder="Leave a comment"></textarea>
-    <button mat-raised-button color="primary">Save Post</button>
-    <button mat-button>Click me!</button>
-
-  </mat-form-field>
+  <form (submit)="onAddPost(postForm)" #postForm="ngForm">
+    <mat-form-field>
+      <input matInput type="text" name="title" placeholder="Title" ngModel required #title="ngModel">
+      <mat-error *ngIf="title.invalid">please input the title</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <textarea matInput rows="3" name="content" placeholder="Content" ngModel required #content="ngModel"></textarea>
+      <mat-error *ngIf="content.invalid">please input the content</mat-error>
+    </mat-form-field>
+    <button mat-raised-button color="accent" type="submit">Save Post</button>
+  </form>
 </mat-card>
