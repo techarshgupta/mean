@@ -1,13 +1,31 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const mongoose = require('mongoose'); //4VDIVneHWDmjaPY0
+const uri = 'mongodb+srv://meanHar:4VDIVneHWDmjaPY0@cluster0-bhe0s.mongodb.net/node-angular?retryWrites=true&w=majority';
+
+// Object Schemas
+const Post = require('./models/post');
+
+// creating the app
 const app = express();
 
+// DB Connection
+mongoose.connect(uri, {
+  useNewUrlParser: true
+}).then(() => {
+  console.log("I am connected to DB !");
+}).catch(() => {
+  console.log("Error to connect to DB !");
+});
+
+// parse the body for whole app
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
 
+// fixing the CORS policy
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
@@ -18,14 +36,19 @@ app.use((req, res, next) => {
   next();
 });
 
+// saving the post to DB
 app.post('/api/posts', (req, res, next) => {
-  const posts = req.body;
-  console.log(posts);
+  const post = new Post({
+    title: req.body.title,
+    content: req.body.content
+  });
+  post.save();
   res.status(201).json({
     message: 'post added successfully'
   });
 });
 
+// fetching the posts from DB
 app.use('/api/posts', (req, res, next) => {
   const posts = [{
       id: 'sfse23we',
