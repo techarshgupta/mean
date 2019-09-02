@@ -62,13 +62,12 @@ app.get('/api/posts', (req, res, next) => {
 });
 
 // deleting the post 
-app.delete('/api/posts:id', (req, res, next) => {
-  console.log("TCL: id", req.params.id);
-  // Post.deleteOne({
-  //   _id: req.params.id
-  // }).then(result => {
-  //   console.log("TCL: result", result);
-  // });
+app.delete('/api/posts/:id', (req, res, next) => {
+  Post.deleteOne({
+    _id: req.params.id
+  }).then(result => {
+    console.log("TCL: result", result);
+  });
   res.status(200).json({
     message: 'post deleted successfully',
   });
