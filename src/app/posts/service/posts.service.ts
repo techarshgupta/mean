@@ -44,9 +44,12 @@ export class PostsService {
 
   getPost(id: string) {
     // return { ...this.Posts.find(p => p.id === id) };
-    return this.http.get<{ _id: string; title: string; content: string }>(
-      'http://localhost:3000/api/posts/' + id
-    );
+    return this.http.get<{
+      _id: string;
+      title: string;
+      content: string;
+      imagePath: string;
+    }>('http://localhost:3000/api/posts/' + id);
   }
 
   addPost(title: string, image: File, content: string) {
@@ -80,19 +83,20 @@ export class PostsService {
   updatePost(id: string, title: string, image: File | string, content: string) {
     let postData: Post | FormData;
     if (typeof image === 'object') {
-      const postData = new FormData();
+      postData = new FormData();
+      postData.append('id', id);
       postData.append('title', title);
       postData.append('image', image, title);
       postData.append('content', content);
     } else {
-      const postData: Post = {
+      postData = {
         id,
         title,
         imagePath: image,
         content
       };
     }
-
+    console.log('TCL: PostsService -> updatePost -> postData', postData);
     this.http
       .put('http://localhost:3000/api/posts/' + id, postData)
       .subscribe(response => {

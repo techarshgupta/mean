@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 // allowing the uploads folder access
-app.use("/image", express.static(path.join("backend/images")));
+app.use("/images", express.static(path.join("backend/images")));
 
 // fixing the CORS policy
 app.use((req, res, next) => {
