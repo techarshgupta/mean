@@ -61,10 +61,14 @@ export class PostsService {
         postData
       )
       .subscribe(responseData => {
+        console.log(
+          'TCL: PostsService -> addPost -> responseData',
+          responseData
+        );
         const post: Post = {
-          id: responseData.postId,
+          id: responseData.post.id,
           title,
-          imagePath: responseData.imagePath,
+          imagePath: responseData.post.imagePath,
           content
         };
         this.Posts.push(post);
@@ -73,18 +77,33 @@ export class PostsService {
       });
   }
 
-  updatePost(id: string, title: string, imagePath: null, content: string) {
-    const post: Post = {
-      id,
-      title,
-      imagePath,
-      content
-    };
+  updatePost(id: string, title: string, image: File | string, content: string) {
+    let postData: Post | FormData;
+    if (typeof image === 'object') {
+      const postData = new FormData();
+      postData.append('title', title);
+      postData.append('image', image, title);
+      postData.append('content', content);
+    } else {
+      const postData: Post = {
+        id,
+        title,
+        imagePath: image,
+        content
+      };
+    }
+
     this.http
-      .put('http://localhost:3000/api/posts/' + id, post)
+      .put('http://localhost:3000/api/posts/' + id, postData)
       .subscribe(response => {
         const updatedPosts = [...this.Posts];
-        const oldPostIndex = updatedPosts.findIndex(p => p.id === post.id);
+        const oldPostIndex = updatedPosts.findIndex(p => p.id === id);
+        const post: Post = {
+          id,
+          title,
+          imagePath: '',
+          content
+        };
         updatedPosts[oldPostIndex] = post;
         this.Posts = updatedPosts;
         this.postUpdated.next([...this.Posts]);
