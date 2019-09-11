@@ -12,29 +12,38 @@ import { Router } from '@angular/router';
 })
 export class PostsService {
   private Posts: Post[] = [];
-  private postUpdated = new Subject<Post[]>();
+  private postUpdated = new Subject<{ posts: Post[]; postCount: number }>();
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  getPosts() {
+  getPosts(postsPerPage: number, currentPage: number) {
+    const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
     // return [...this.Posts];
     this.http
-      .get<{ message: string; posts: any }>('http://localhost:3000/api/posts')
+      .get<{ message: string; posts: any; maxPosts: number }>(
+        'http://localhost:3000/api/posts' + queryParams
+      )
       .pipe(
         map(postData => {
-          return postData.posts.map(post => {
-            return {
-              title: post.title,
-              content: post.content,
-              id: post._id,
-              imagePath: post.imagePath
-            };
-          });
+          return {
+            posts: postData.posts.map(post => {
+              return {
+                title: post.title,
+                content: post.content,
+                id: post._id,
+                imagePath: post.imagePath
+              };
+            }),
+            maxPosts: postData.maxPosts
+          };
         })
       )
-      .subscribe(posts => {
-        this.Posts = posts;
-        this.postUpdated.next([...this.Posts]);
+      .subscribe(transformedData => {
+        this.Posts = transformedData.posts;
+        this.postUpdated.next({
+          posts: [...this.Posts],
+          postCount: transformedData.maxPosts
+        });
       });
   }
 
@@ -64,18 +73,18 @@ export class PostsService {
         postData
       )
       .subscribe(responseData => {
-        console.log(
-          'TCL: PostsService -> addPost -> responseData',
-          responseData
-        );
-        const post: Post = {
-          id: responseData.post.id,
-          title,
-          imagePath: responseData.post.imagePath,
-          content
-        };
-        this.Posts.push(post);
-        this.postUpdated.next([...this.Posts]);
+        // console.log(
+        //   'TCL: PostsService -> addPost -> responseData',
+        //   responseData
+        // );
+        // const post: Post = {
+        //   id: responseData.post.id,
+        //   title,
+        //   imagePath: responseData.post.imagePath,
+        //   content
+        // };
+        // this.Posts.push(post);
+        // this.postUpdated.next([...this.Posts]);
         this.router.navigate(['/']);
       });
   }
@@ -100,29 +109,28 @@ export class PostsService {
     this.http
       .put('http://localhost:3000/api/posts/' + id, postData)
       .subscribe(response => {
-        const updatedPosts = [...this.Posts];
-        const oldPostIndex = updatedPosts.findIndex(p => p.id === id);
-        const post: Post = {
-          id,
-          title,
-          imagePath: '',
-          content
-        };
-        updatedPosts[oldPostIndex] = post;
-        this.Posts = updatedPosts;
-        this.postUpdated.next([...this.Posts]);
+        // const updatedPosts = [...this.Posts];
+        // const oldPostIndex = updatedPosts.findIndex(p => p.id === id);
+        // const post: Post = {
+        //   id,
+        //   title,
+        //   imagePath: '',
+        //   content
+        // };
+        // updatedPosts[oldPostIndex] = post;
+        // this.Posts = updatedPosts;
+        // this.postUpdated.next([...this.Posts]);
         this.router.navigate(['/']);
       });
   }
 
   deletePost(postId: string) {
-    this.http
-      .delete('http://localhost:3000/api/posts/' + postId)
-      .subscribe(res => {
-        console.log('deleted succesfully', res);
-        const updatedPosts = this.Posts.filter(post => post.id !== postId);
-        this.Posts = updatedPosts;
-        this.postUpdated.next([...this.Posts]);
-      });
+    return this.http.delete('http://localhost:3000/api/posts/' + postId);
+    // .subscribe(res => {
+    //   console.log('deleted succesfully', res);
+    //   const updatedPosts = this.Posts.filter(post => post.id !== postId);
+    //   this.Posts = updatedPosts;
+    //   this.postUpdated.next([...this.Posts]);
+    // });
   }
 }
