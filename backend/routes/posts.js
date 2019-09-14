@@ -4,6 +4,7 @@ const multer = require('multer');
 const router = express.Router();
 
 const Post = require('../models/post');
+const checkAuth = require('../middleware/check-auth');
 
 const MIME_TYPE_MAP = {
   'image/png': 'png',
@@ -33,6 +34,7 @@ const storage = multer.diskStorage({
 // saving the post to DB
 router.post(
   '',
+  checkAuth,
   multer({
     storage: storage
   }).single('image'),
@@ -57,6 +59,7 @@ router.post(
 
 router.put(
   '/:id',
+  checkAuth,
   multer({
     storage: storage
   }).single('image'),
@@ -97,7 +100,6 @@ router.get('', (req, res, next) => {
   }
   postQuery
     .then(documents => {
-      console.log('TCL: documents', documents);
       fetchedPosts = documents;
       return Post.countDocuments();
     })
@@ -123,7 +125,7 @@ router.get('/:id', (req, res, next) => {
 });
 
 // deleting the post
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', checkAuth, (req, res, next) => {
   Post.deleteOne({
     _id: req.params.id
   }).then(result => {
