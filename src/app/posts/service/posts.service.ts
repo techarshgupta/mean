@@ -14,7 +14,7 @@ export class PostsService {
   private Posts: Post[] = [];
   private postUpdated = new Subject<{ posts: Post[]; postCount: number }>();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   getPosts(postsPerPage: number, currentPage: number) {
     const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
@@ -31,7 +31,8 @@ export class PostsService {
                 title: post.title,
                 content: post.content,
                 id: post._id,
-                imagePath: post.imagePath
+                imagePath: post.imagePath,
+                creator: post.creator
               };
             }),
             maxPosts: postData.maxPosts
@@ -73,6 +74,7 @@ export class PostsService {
         postData
       )
       .subscribe(responseData => {
+        console.log('TCL: PostsService -> addPost -> responseData', responseData);
         // console.log(
         //   'TCL: PostsService -> addPost -> responseData',
         //   responseData

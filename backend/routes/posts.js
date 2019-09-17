@@ -43,7 +43,8 @@ router.post(
     const post = new Post({
       title: req.body.title,
       imagePath: url + '/images/' + req.file.filename,
-      content: req.body.content
+      content: req.body.content,
+      creator: req.userData.userId,
     });
     post.save().then(createdPost => {
       res.status(201).json({
@@ -78,13 +79,22 @@ router.put(
     console.log(post);
     Post.updateOne(
       {
-        _id: req.params.id
+        _id: req.params.id,
+        creator: req.userData.userId
       },
       post
     ).then(result => {
-      res.status(200).json({
-        message: 'updated successfully'
-      });
+      if (result.nModified > 0) {
+        res.status(200).json({
+          message: 'updated successfully',
+          result
+        });
+      } else {
+        res.status(401).json({
+          message: 'Not Authorised',
+          result
+        });
+      }
     });
   }
 );
@@ -127,7 +137,8 @@ router.get('/:id', (req, res, next) => {
 // deleting the post
 router.delete('/:id', checkAuth, (req, res, next) => {
   Post.deleteOne({
-    _id: req.params.id
+    _id: req.params.id,
+    creator: req.userData.userId
   }).then(result => {
     console.log('TCL: result', result);
   });
