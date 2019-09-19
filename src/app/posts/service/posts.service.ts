@@ -59,6 +59,7 @@ export class PostsService {
       title: string;
       content: string;
       imagePath: string;
+      creator: string;
     }>('http://localhost:3000/api/posts/' + id);
   }
 
@@ -91,7 +92,7 @@ export class PostsService {
       });
   }
 
-  updatePost(id: string, title: string, image: File | string, content: string) {
+  updatePost(id: string, title: string, image: File | string, content: string, ) {
     let postData: Post | FormData;
     if (typeof image === 'object') {
       postData = new FormData();
@@ -104,7 +105,8 @@ export class PostsService {
         id,
         title,
         imagePath: image,
-        content
+        content,
+        creator: null
       };
     }
     console.log('TCL: PostsService -> updatePost -> postData', postData);

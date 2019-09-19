@@ -74,7 +74,8 @@ router.put(
       _id: req.body.id,
       title: req.body.title,
       content: req.body.content,
-      imagePath: imagePath
+      imagePath: imagePath,
+      creator: req.userData.userId,
     });
     console.log(post);
     Post.updateOne(
@@ -140,10 +141,17 @@ router.delete('/:id', checkAuth, (req, res, next) => {
     _id: req.params.id,
     creator: req.userData.userId
   }).then(result => {
-    console.log('TCL: result', result);
-  });
-  res.status(200).json({
-    message: 'post deleted successfully'
+    if (result.n > 0) {
+      res.status(200).json({
+        message: 'deleted  successfully',
+        result
+      });
+    } else {
+      res.status(401).json({
+        message: 'Not Authorised',
+        result
+      });
+    }
   });
 });
 
