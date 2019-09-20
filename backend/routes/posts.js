@@ -54,6 +54,10 @@ router.post(
           id: createdPost._id
         }
       });
+    }).catch((error) => {
+      res.status(500).json({
+        message: 'Post creation failed! Please Try Again',
+      })
     });
   }
 );
@@ -96,6 +100,10 @@ router.put(
           result
         });
       }
+    }).catch((error) => {
+      res.status(500).json({
+        message: 'Could not find the post',
+      });
     });
   }
 );
@@ -120,6 +128,10 @@ router.get('', (req, res, next) => {
         posts: fetchedPosts,
         maxPosts: count
       });
+    }).catch((error) => {
+      res.status(500).json({
+        message: 'Fetching Post failed! Please Try Again',
+      });
     });
 });
 
@@ -132,6 +144,10 @@ router.get('/:id', (req, res, next) => {
         message: 'Post not found !'
       });
     }
+  }).catch((error) => {
+    res.status(500).json({
+      message: 'Fetching Post failed! Please Try Again',
+    });
   });
 });
 
@@ -152,6 +168,10 @@ router.delete('/:id', checkAuth, (req, res, next) => {
         result
       });
     }
+  }).catch((error) => {
+    res.status(500).json({
+      message: 'Deleting the Post failed! Please Try Again',
+    });
   });
 });
 
