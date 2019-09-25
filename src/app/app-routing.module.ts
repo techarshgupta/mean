@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PostListComponent } from './posts/post-list/post-list.component';
 import { PostCreateComponent } from './posts/post-create/post-create.component';
-import { LoginComponent } from './auth/login/login.component';
-import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { AuthGuard } from './auth/guard/auth.guard';
 
 const routes: Routes = [
@@ -22,13 +20,9 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'login',
-    component: LoginComponent
+    path: 'auth',
+    loadChildren: './auth/auth.module#AuthModule'
   },
-  {
-    path: 'signUp',
-    component: SignUpComponent
-  }
 ];
 
 @NgModule({
